@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./../static/css/index.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <title>Document</title>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <a href="#">
+                AskMe
+            </a>
+        </div>
+        <div class="search-form">
+            <form action="#" class="search-form">
+                <input type="search" class="search-form-input" placeholder="Search..." maxlength="64">
+                <button type="submit" class="search-form-submit">Ask</button>
+            </form>
+        </div>
+        <div class="account">
+            <div class="account-image">
+                <img src="./../static/img/40982a8167f0a53dedce3731178f2ef5.jpg" class="avatar" alt="avatar">
+            </div>
+            <div class="account-content">
+                <div class="account-name">Dr. Pepper</div>
+                <div class="account-actions">
+                    <a href="./settings.html">Settings</a>
+                    <a href="./logout.html">Log out</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="title-bar">
+            <h1>
+                Settings: Dr. Pepper
+            </h1>
+        </div>
+
+        <p class="form-error">
+            Incorrect email adress
+        </p>
+
+        <div class="content">
+            <form action="#" class="settings-form">
+                <div class="form-line">
+                    <p class="form-title">Login</p>
+                    <input type="text" class="question-form-input" value="dr_pepper" maxlength="32">
+                </div>
+                <div class="form-line">
+                    <p class="form-title">Email</p>
+                    <input type="email" class="question-form-input" value="dr.peppermail.ru" maxlength="32">
+                </div>
+                <div class="form-line">
+                    <p class="form-title">Nickname</p>
+                    <input type="text" class="question-form-input" value="Dr. Pepper" maxlength="32">
+                </div>
+                <div class="form-line">
+                    <p class="form-title">Upload avatar</p>
+                    <div class="avatar-input">
+                        <div class="account-image">
+                            <img src="./../static/img/40982a8167f0a53dedce3731178f2ef5.jpg" alt="avatar" class="settings-avatar">
+                        </div>
+                        <input type="file" id="actual-btn" hidden/>
+                        <div class="choose-file-block">
+                            <label for="actual-btn" class="choose-file">Choose File</label>
+                            <span id="file-chosen">No file chosen</span>
+                        </div>
+                        <script>
+                            const actualBtn = document.getElementById('actual-btn');
+                            const fileChosen = document.getElementById('file-chosen');
+                            actualBtn.addEventListener('change', function() {
+                            fileChosen.textContent = this.files[0].name
+                            })
+                        </script>
+                    </div>
+                </div>
+                <div class="form-line">
+                    <p class="form-title"></p>
+                    <button type="submit" class="form-submit">Save</button>
+                </div>
+            </form>
+
+            <aside class="sidebar">
+                <section class="popular-tags">
+                    <h3>Popular Tags</h3>
+                    <div class="tags">
+                        <div class="tag">
+                            <a href="#">perl</a>
+                        </div>
+                        <div class="tag">
+                            <a href="#">python</a>
+                        </div>
+                        <div class="tag">
+                            <a href="#">techno-park</a>
+                        </div>
+                        <div class="tag">
+                            <a href="#">MySQL</a>
+                        </div>
+                        <div class="tag">
+                            <a href="#">django</a>
+                        </div>
+                        <div class="tag">
+                            <a href="#">mail.ru</a>
+                        </div>
+                        <div class="tag">
+                            <a href="#">Voloshin</a>
+                        </div>
+                        <div class="tag">
+                            <a href="#">Firefox</a>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="best-members">
+                    <h3>Best Members</h3>
+                    <ul class="best-members-list">
+                        <li><a href="#">Mr. Freeman</a></li>
+                        <li><a href="#">Dr. House</a></li>
+                        <li><a href="#">Bender</a></li>
+                        <li><a href="#">Queen Victoria</a></li>
+                        <li><a href="#">V. Pupkin</a></li>
+                    </ul>
+                </section>
+            </aside>
+        </div>
+    </main>
+</body>
+</html>
