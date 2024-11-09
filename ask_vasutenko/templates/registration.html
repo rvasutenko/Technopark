@@ -1,0 +1,59 @@
+{% extends "base_unauthorized.html" %}
+{% load static %}
+
+{% block title %}
+    Registration
+{% endblock %}
+
+{% block title-bar %}
+    <h1>Registration</h1>
+{% endblock %}
+
+{% block main-content %}
+    <div class="left">
+        <p class="form-error">
+            Incorrect email adress
+        </p>
+        <form action="#" class="register-form">
+            <div class="form-line">
+                <p class="form-title">Login</p>
+                <input type="text" class="question-form-input" value="dr_pepper" maxlength="32">
+            </div>
+            <div class="form-line">
+                <p class="form-title">Email</p>
+                <input type="email" class="question-form-input" value="dr.pepper" maxlength="32">
+            </div>
+            <div class="form-line">
+                <p class="form-title">Nickname</p>
+                <input type="text" class="question-form-input" value="Dr. Pepper" maxlength="32">
+            </div>
+            <div class="form-line">
+                <p class="form-title">Password</p>
+                <input type="password" class="question-form-input" value="password" maxlength="16">
+            </div>
+            <div class="form-line">
+                <p class="form-title">Repeat password</p>
+                <input type="password" class="question-form-input" value="password" maxlength="16">
+            </div>
+            <div class="form-line">
+                <p class="form-title">Upload avatar</p>
+                <input type="file" id="actual-btn" hidden/>
+                <div class="choose-file-block">
+                    <label for="actual-btn" class="choose-file">Choose File</label>
+                    <span id="file-chosen">No file chosen</span>
+                </div>
+                <script>
+                    const actualBtn = document.getElementById('actual-btn');
+                    const fileChosen = document.getElementById('file-chosen');
+                    actualBtn.addEventListener('change', function() {
+                    fileChosen.textContent = this.files[0].name
+                    })
+                </script>
+            </div>
+            <div class="form-line">
+                <p class="form-title"></p>
+                <button type="submit" class="form-submit">Register</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}

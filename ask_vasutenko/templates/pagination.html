@@ -1,0 +1,25 @@
+<div class="pagination">
+    {% if page.has_previous %}
+        <a href="?page=1">1</a>
+    {% endif %}
+
+    {% if page.previous_page_number != 1 %}
+        {% if page.previous_page_number|add:"-1" != 1 %}
+            <div class="hidden-pages">...</div>
+        {% endif %}
+        <a href="?page={{ page.previous_page_number }}">{{ page.previous_page_number }}</a>
+    {% endif %}
+
+    <a class="active">{{ page.number }}</a>
+
+    {% if page.next_page_number != page.paginator.num_pages %}
+        <a href="?page={{ page.next_page_number }}">{{ page.next_page_number }}</a>
+        {% if page.next_page_number|add:"1" != page.paginator.num_pages %}
+            <div class="hidden-pages">...</div>
+        {% endif %}
+    {% endif %}
+
+    {% if page.has_next %}
+        <a href="?page={{ page.paginator.num_pages }}">{{ page.paginator.num_pages }}</a>
+    {% endif %}
+</div>

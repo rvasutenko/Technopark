@@ -1,0 +1,56 @@
+{% extends "base_authorized.html" %}
+{% load static %}
+
+{% block title %}
+    Settings
+{% endblock %}
+
+{% block title-bar %}
+    <h1>Settings: Dr. Pepper</h1>
+{% endblock %}
+
+{% block main-content %}
+    <div class="left">
+        <p class="form-error">
+            Incorrect email adress
+        </p>
+        <form action="#" class="settings-form">
+            <div class="form-line">
+                <p class="form-title">Login</p>
+                <input type="text" class="question-form-input" value="dr_pepper" maxlength="32">
+            </div>
+            <div class="form-line">
+                <p class="form-title">Email</p>
+                <input type="email" class="question-form-input" value="dr.peppermail.ru" maxlength="32">
+            </div>
+            <div class="form-line">
+                <p class="form-title">Nickname</p>
+                <input type="text" class="question-form-input" value="Dr. Pepper" maxlength="32">
+            </div>
+            <div class="form-line">
+                <p class="form-title">Upload avatar</p>
+                <div class="avatar-input">
+                    <div class="account-image">
+                        <img src="../static/img/avatar.jpg" alt="avatar" class="settings-avatar">
+                    </div>
+                    <input type="file" id="actual-btn" hidden/>
+                    <div class="choose-file-block">
+                        <label for="actual-btn" class="choose-file">Choose File</label>
+                        <span id="file-chosen">No file chosen</span>
+                    </div>
+                    <script>
+                        const actualBtn = document.getElementById('actual-btn');
+                        const fileChosen = document.getElementById('file-chosen');
+                        actualBtn.addEventListener('change', function() {
+                        fileChosen.textContent = this.files[0].name
+                        })
+                    </script>
+                </div>
+            </div>
+            <div class="form-line">
+                <p class="form-title"></p>
+                <button type="submit" class="form-submit">Save</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}

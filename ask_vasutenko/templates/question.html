@@ -1,0 +1,70 @@
+{% extends "base_authorized.html" %}
+{% load static %}
+
+{% block title %}
+    Questions
+{% endblock %}
+
+{% block main-content %}
+    <div class="left">
+        <article class="question" id="{{ question.id }}">
+            <div class="card-left">
+                <img src="{% static 'img/avatar.jpg' %}" alt="Image" class="card-image">
+                <input type="number" class="card-likes" value="5">
+            </div>
+            <div class="card-right">
+                <div class="card-right-content">
+                    <h4 class="card-title">
+                        <a>{{ question.title }}</a>
+                    </h4>
+                    <div class="card-text">
+                        {{ question.text }}
+                    </div>
+                </div>
+                <div class="card-right-bottom">
+                    <div class="card-tags">
+                        {% for tag in question.tags %}
+                            <div class="tag">
+                                <a href="{% url 'tag' tag=tag %}">{{ tag }}</a>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </article>
+
+        <div class="divider"></div>
+
+        <section class="answers">
+            {% for answer in page %}
+                <article class="answer-card" id="{{ answer.id }}">
+                    <div class="card-left">
+                        <img src="{% static 'img/avatar.jpg' %}" alt="avatar" class="card-image">
+                        <input type="number" class="card-likes" value="{{ answer.likes }}">
+                    </div>
+                    <div class="card-right">
+                        <div class="card-right-content">
+                            <div class="card-text">
+                                {{ answer.text }}
+                            </div>
+                        </div>
+                        <div class="card-right-bottom">
+                            <p class="checkbox">
+                                <input type="checkbox">
+                                Correct!
+                            </p>
+                        </div>
+                    </div>
+                </article>
+            {% endfor %}
+        </section>
+
+        {% include 'pagination.html' %}
+
+        <div class="divider"></div>
+        <form action="#" class="answer-form">
+            <textarea name="" cols="30" rows="10" maxlength="2048"></textarea>
+            <button type="submit" class="form-submit">Answer</button>
+        </form>
+    </div>
+{% endblock %}
