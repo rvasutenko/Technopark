@@ -4,7 +4,7 @@
         <div class="tags">
             {% for tag in sidebar.tags %}
                 <div class="tag">
-                    <a href="{% url 'tag' tag=tag %}">
+                    <a href="{% url 'tag' id=tag.id %}">
                         {{ tag }}
                     </a>
                 </div>

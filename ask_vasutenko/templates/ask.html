@@ -10,27 +10,25 @@
 {% endblock %}
 
 {% block main-content %}
-    <div class="left">
-        <p class="form-error">
-            Fill in the Title field
-        </p>
-        <form action="#" class="question-form">
-            <div class="form-line">
-                <p class="form-title">Title</p>
-                <input type="text" class="question-form-input" maxlength="64" required>
-            </div>
-            <div class="form-line">
-                <p class="form-title">Text</p>
-                <textarea cols="30" rows="10" class="question-form-input" maxlength="2048" required>Some text here</textarea>
-            </div>
-            <div class="form-line">
-                <p class="form-title">Tags</p>
-                <input type="text" class="question-form-input" value="moon, park, puzzle" maxlength="64" required>
-            </div>
-            <div class="form-line">
-                <p class="form-title"></p>
-                <button type="submit" class="form-submit">Ask!</button>
-            </div>
-        </form>
-    </div>
+    <p class="form-error">
+        Fill in the Title field
+    </p>
+    <form action="#" class="question-form">
+        <div class="form-line">
+            <p class="form-title">Title</p>
+            <input type="text" class="question-form-input" maxlength="64" required>
+        </div>
+        <div class="form-line">
+            <p class="form-title">Text</p>
+            <textarea cols="30" rows="10" class="question-form-input" maxlength="2048" required>Some text here</textarea>
+        </div>
+        <div class="form-line">
+            <p class="form-title">Tags</p>
+            <input type="text" class="question-form-input" value="moon, park, puzzle" maxlength="64" required>
+        </div>
+        <div class="form-line">
+            <p class="form-title"></p>
+            <button type="submit" class="form-submit">Ask!</button>
+        </div>
+    </form>
 {% endblock %}

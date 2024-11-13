@@ -6,49 +6,23 @@
 {% endblock %}
 
 {% block title-bar %}
-    <h1>
-        Tag:
-        <a>{{ tag }}</a>
-    </h1>
+    <div class="left">
+        <h1>
+            Tag:
+            <a>{{ tag }}</a>
+        </h1>
+    </div>
+    <a class="ask-question-btn" href="{% url 'ask' %}">
+        Ask question
+    </a>
 {% endblock %}
+
 
 {% block main-content %}
     <div class="cards">
         {% for question in page %}
-            <article class="card" id="{{ tag.id }}">
-                <div class="card-left">
-                    <img src="{% static 'img/avatar.jpg' %}" alt="avatar" class="card-image">
-                    <input type="number" class="card-likes" value="5">
-                </div>
-                <div class="card-right">
-                    <div class="card-right-content">
-                        <h4 class="card-title">
-                            <a href="{% url 'question' id=question.id %}">
-                                {{ question.title }}
-                            </a>
-                        </h4>
-                        <div class="card-text">
-                            {{ question.text }}
-                        </div>
-                    </div>
-                    <div class="card-right-bottom">
-                        <a href="{% url 'question' id=question.id %}" class="answers-count">
-                            3 answers
-                        </a>
-                        <div class="card-tags">
-                            {% for tag in question.tags %}
-                                <div class="tag">
-                                    <a href="{% url 'tag' tag=tag %}">
-                                        {{ tag }}
-                                    </a>
-                                </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                </div>
-            </article>
+            {% include 'question_card.html' %}
         {% endfor %}
-
         {% include 'pagination.html' %}
     </div>
 {% endblock %}

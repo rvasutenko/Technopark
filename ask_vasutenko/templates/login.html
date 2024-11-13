@@ -10,30 +10,28 @@
 {% endblock %}
 
 {% block main-content %}
-    <div class="left">
-        <p class="form-error">
-            Wrong login or password
-        </p>
-        <form action="#" class="login-form">
-            <div class="form-line">
-                <p class="form-title">Login</p>
-                <input type="text" class="question-form-input" value="Dr. Pepper" maxlength="32">
+    <p class="form-error">
+        Wrong login or password
+    </p>
+    <form action="#" class="login-form">
+        <div class="form-line">
+            <p class="form-title">Login</p>
+            <input type="text" class="question-form-input" value="Dr. Pepper" maxlength="32">
+        </div>
+        <div class="form-line">
+            <p class="form-title">Password</p>
+            <input type="password" class="question-form-input" value="password" maxlength="16">
+        </div>
+        <div class="form-line">
+            <p class="form-title"></p>
+            <div class="btn-block">
+                <button type="submit" class="form-submit">Log in</button>
+                <p>
+                    <a href="{% url 'signup' %}" class="create-account">
+                        Create new account
+                    </a>
+                </p>
             </div>
-            <div class="form-line">
-                <p class="form-title">Password</p>
-                <input type="password" class="question-form-input" value="password" maxlength="16">
-            </div>
-            <div class="form-line">
-                <p class="form-title"></p>
-                <div class="btn-block">
-                    <button type="submit" class="form-submit">Log in</button>
-                    <p>
-                        <a href="{% url 'signup' %}" class="create-account">
-                            Create new account
-                        </a>
-                    </p>
-                </div>
-            </div>
-        </form>
-    </div>
+        </div>
+    </form>
 {% endblock %}

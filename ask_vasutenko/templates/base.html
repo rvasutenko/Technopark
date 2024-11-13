@@ -21,19 +21,20 @@
         <div class="search-form">
             <form action="#" class="search-form">
                 <input type="search" class="search-form-input" placeholder="Search..." maxlength="64">
-                <button type="submit" class="search-form-submit">Ask</button>
+                <button type="submit" class="search-form-submit">Search</button>
             </form>
         </div>
         {% block account %}{% endblock %}
     </header>
 
     <main class="container">
-        <div class="title-bar">
-            {% block title-bar %}{% endblock %}
-        </div>
-
         <div class="content">
-            {% block main-content %}{% endblock %}
+            <div class="left">
+                <div class="title-bar">
+                    {% block title-bar %}{% endblock %}
+                </div>
+                {% block main-content %}{% endblock %}
+            </div>
             {% include 'sidebar.html' %}
         </div>
     </main>

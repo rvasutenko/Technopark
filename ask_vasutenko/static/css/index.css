@@ -152,9 +152,9 @@ main {
 
 .title-bar {
     display: flex;
-    align-items: baseline;
-    gap: 20px;
+    align-items: center;
     margin-bottom: 24px;
+    justify-content: space-between;
 }
 
 .content {
@@ -164,7 +164,7 @@ main {
 
 .cards {
     display: flex;
-    width: 70%;
+    width: 100%;
     flex-direction: column;
     gap: 16px;
 }
@@ -595,4 +595,38 @@ button {
     display: flex;
     flex-direction: column;
     width: 70%;
+}
+
+
+
+.title-bar .left {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    gap: 20px;
+
+}
+
+.ask-question-btn {
+    border: none;
+    border-radius: 8px;
+    background-color: var(--a-default);
+    padding: 0 12px;
+    color: white;
+    cursor: pointer;
+    height: 32px;
+    font-weight: 400;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+}
+
+.ask-question-btn:hover {
+    text-decoration: none;
+    color: var(--white);
+    background-color: var(--a-hover);
+}
+
+.content .left {
+
 }
