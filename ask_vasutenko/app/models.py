@@ -7,9 +7,6 @@ from django.db.models import Count
 
 
 class QuestionManager(models.Manager):
-    def get_unique(self, id):
-        return self.filter(id=id).first()
-
     def get_new(self):
         return self.filter(created_at__gte=datetime.today() - timedelta(days=7)).order_by('-created_at').prefetch_related('tags')
 

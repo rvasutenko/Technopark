@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.http import Http404
 from .models import *
 
 
@@ -42,7 +43,10 @@ def hot(request):
 
 
 def tag(request, id):
-    tag = Tag.objects.get(id=id)
+    try:
+        tag = Tag.objects.get(id=id)
+    except Tag.DoesNotExist:
+        raise Http404("No Tag matches the given query.")
     questions = Question.objects.get_by_tag(id)
     page = paginate(questions, request)
     sidebar = gen_sidebar()
@@ -50,7 +54,10 @@ def tag(request, id):
 
 
 def question(request, id):
-    question = Question.objects.get_unique(id)
+    try:
+        question = Question.objects.get(id=id)
+    except Question.DoesNotExist:
+        raise Http404("No Question matches the given query.")
     answers = Answer.objects.get_top(question)
     page = paginate(answers, request)
     sidebar = gen_sidebar()
