@@ -3,3 +3,10 @@ __pycache__/
 venv/
 .venv
 .idea
+.env
+
+*.log
+*.pot
+*.pyc
+db.sqlite3
+media/
