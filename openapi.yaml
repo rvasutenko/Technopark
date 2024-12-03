@@ -1,0 +1,404 @@
+openapi: 3.0.0
+info:
+  title: Steam Friends & Profile API
+  description: API для управления списком друзей и профилем в Steam. Позволяет создавать, читать, обновлять и удалять друзей и профили.
+  version: 1.0.0
+servers:
+  - url: https://steamcommunity.com
+    description: Production server
+
+components:
+  securitySchemes:
+    steamLoginSecure:
+      type: apiKey
+      in: cookie
+      name: steamLoginSecure
+  schemas:
+    CreateInviteResponse:
+      type: object
+      properties:
+        invite_token:
+          type: string
+          description: Токен быстрого приглашения
+        invite_limit:
+          type: string
+          description: Лимит приглашений
+        invite_duration:
+          type: string
+          description: Длительность действия токена
+        time_created:
+          type: integer
+          description: Время создания токена (timestamp)
+        valid:
+          type: integer
+          description: Указывает, является ли токен действительным
+    
+    GetInvitesResponse:
+      type: array
+      items:
+        type: object
+        properties:
+          invite_token:
+            type: string
+          invite_limit:
+            type: string
+          invite_duration:
+            type: string
+          time_created:
+            type: integer
+          valid:
+            type: integer
+    
+    UpdateFriendRequestBody:
+      type: object
+      properties:
+        sessionid:
+          type: string
+          description: Идентификатор сессии
+        steamid:
+          type: string
+          description: Ваш Steam ID
+        ajax:
+          type: string
+          enum: [1]
+          description: Флаг AJAX-запроса
+        action:
+          type: string
+          enum: [accept, deny]
+          description: Действие на запрос в друзья
+        steamids:
+          type: array
+          items:
+            type: string
+          description: Список Steam ID пользователей, на запросы которых отвечаете
+    
+    DeleteFriendRequestBody:
+      type: object
+      properties:
+        sessionID:
+          type: string
+          description: Идентификатор сессии
+        steamid:
+          type: string
+          description: Steam ID друга
+          
+    SuccessResponse:
+      type: boolean
+      description: Успех операции
+      
+    
+    CreateCommentRequest:
+      type: object
+      properties:
+        comment:
+          type: string
+          description: Текст комментария
+        count:
+          type: string
+          description: Количество комментариев, которое будет возвращено
+        sessionid:
+          type: string
+          description: Идентификатор сессии
+        feature2:
+          type: string
+          enum: ["-1"]
+          description: Флаг доп. функции (всегда -1 для комментариев)
+      required:
+        - comment
+        - sessionid
+        - feature2
+
+    CreateCommentResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        name:
+          type: string
+        start:
+          type: integer
+        pagesize:
+          type: string
+        total_count:
+          type: integer
+        upvotes:
+          type: integer
+        has_upvoted:
+          type: integer
+        comments_html:
+          type: string
+        timelastpost:
+          type: integer
+
+    EmoticonListResponse:
+      type: array
+      items:
+        type: string
+
+    UpdateProfileRequest:
+      type: object
+      additionalProperties:
+        type: string
+      description: Полный объект с изменениями профиля. Позволяет передавать любые параметры профиля.
+
+    UpdateProfileResponse:
+      type: object
+      properties:
+        success:
+          type: integer
+        errmsg:
+          type: string
+          description: Сообщение об ошибке, если операция завершилась неудачно
+
+    DeleteCommentRequest:
+      type: object
+      properties:
+        gidcomment:
+          type: string
+          description: ID комментария для удаления
+        start:
+          type: string
+          description: Начальный индекс
+        count:
+          type: string
+          description: Количество комментариев, возвращаемое после удаления
+        sessionid:
+          type: string
+          description: Идентификатор сессии
+        feature2:
+          type: string
+          enum: ["-1"]
+          description: Флаг доп. функции (всегда -1 для комментариев)
+      required:
+        - gidcomment
+        - sessionid
+        - feature2
+
+    DeleteCommentResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        name:
+          type: string
+        start:
+          type: integer
+        pagesize:
+          type: string
+        total_count:
+          type: integer
+        upvotes:
+          type: integer
+        has_upvoted:
+          type: integer
+        comments_html:
+          type: string
+        timelastpost:
+          type: integer
+  
+
+security:
+  - steamLoginSecure: []
+
+paths:
+  /invites/ajaxcreate:
+    post:
+      summary: Создание токена быстрого приглашения
+      description: Создает новый токен быстрого приглашения для добавления друзей.
+      responses:
+        '200':
+          description: Токен успешно создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateInviteResponse'
+        '401':
+          description: Неавторизован. Требуется кука steamLoginSecure.
+      security:
+        - steamLoginSecure: []
+
+  /invites/ajaxgetall:
+    get:
+      summary: Получение всех токенов быстрого приглашения
+      description: Возвращает список всех токенов, созданных пользователем.
+      parameters:
+        - name: sessionid
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Идентификатор сессии, совпадает с cookie `sessionid`.
+      responses:
+        '200':
+          description: Список токенов
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetInvitesResponse'
+        '401':
+          description: Неавторизован. Требуется кука steamLoginSecure.
+      security:
+        - steamLoginSecure: []
+
+  /profiles/{id}/friends/actio:
+    post:
+      summary: Ответ на запрос в друзья
+      description: Принимает или отклоняет запрос в друзья.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Steam ID профиля.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateFriendRequestBody'
+      responses:
+        '200':
+          description: Запрос успешно обработан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '401':
+          description: Неавторизован. Требуется кука steamLoginSecure.
+      security:
+        - steamLoginSecure: []
+
+  /actions/RemoveFriendAjax:
+    post:
+      summary: Удаление из друзей
+      description: Удаляет указанного пользователя из списка друзей.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteFriendRequestBody'
+      responses:
+        '200':
+          description: Удаление прошло успешно
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '401':
+          description: Неавторизован. Требуется кука steamLoginSecure.
+      security:
+        - steamLoginSecure: []
+        
+  
+
+  
+  
+
+  /comment/Profile/post/{profile-id}/-1/:
+    post:
+      summary: Оставить комментарий на профиль
+      description: Добавляет новый комментарий к указанному профилю.
+      parameters:
+        - name: profile-id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID профиля, к которому добавляется комментарий.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCommentRequest'
+      responses:
+        '200':
+          description: Комментарий успешно добавлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateCommentResponse'
+        '401':
+          description: Неавторизован. Требуется кука steamLoginSecure.
+      security:
+        - steamLoginSecure: []
+
+  /actions/EmoticonList:
+    get:
+      summary: Получение списка доступных эмодзи
+      description: Возвращает список эмодзи, доступных пользователю для комментариев.
+      responses:
+        '200':
+          description: Список эмодзи успешно получен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmoticonListResponse'
+        '401':
+          description: Неавторизован. Требуется кука steamLoginSecure.
+      security:
+        - steamLoginSecure: []
+
+  /profiles/{profile-id}/edit/:
+    post:
+      summary: Изменение профиля
+      description: Вносит изменения в профиль пользователя.
+      parameters:
+        - name: profile-id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID профиля, который изменяется.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProfileRequest'
+      responses:
+        '200':
+          description: Профиль успешно изменен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateProfileResponse'
+        '400':
+          description: Ошибка изменения профиля
+      security:
+        - steamLoginSecure: []
+
+  /comment/Profile/delete/{profile-id}/-1/:
+    post:
+      summary: Удаление комментария
+      description: Удаляет комментарий из указанного профиля.
+      parameters:
+        - name: profile-id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID профиля, из которого удаляется комментарий.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteCommentRequest'
+      responses:
+        '200':
+          description: Комментарий успешно удален
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteCommentResponse'
+        '401':
+          description: Неавторизован. Требуется кука steamLoginSecure.
+      security:
+        - steamLoginSecure: []
+
+
+
+    
