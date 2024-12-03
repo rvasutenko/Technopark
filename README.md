@@ -13,10 +13,10 @@
 
 	{
 		sessionid: "d29731c20c424effacace4e8",
-		steamid: "76561198868899919", *// твой id*
+		steamid: "76561198868899919", // твой id
 		ajax: "1",
 		action: "accept",
-		steamids[]: "76561198838163977" *// id профиля на чей запрос отвечаем*
+		steamids[]: "76561198838163977" // id профиля на чей запрос отвечаем*
 	}
 url - <https://steamcommunity.com/profiles/>[{id}/friends/actio]()
 тело ответа: 
@@ -37,7 +37,7 @@ url - <https://steamcommunity.com/profiles/>[{id}/friends/actio]()
 
 	{
 		sessionID:	"d29731c20c424effacace4e8"
-		steamid:	"76561199478984887" *// id профиля друга*
+		steamid:	"76561199478984887" // id профиля друга*
 	}
 Тело ответа:
 
@@ -86,7 +86,7 @@ url - <https://steamcommunity.com/profiles/>[{id}/friends/actio]()
 
 	{
 		success: 1
-		errmsg: "" *// сообщение об ошибке*
+		errmsg: "" // сообщение об ошибке
 	}
 **DELETE – Удалить комментарий:** url – <https://steamcommunity.com/comment/Profile/delete/>{profile-id}/-1/, нужна кука, тело запроса:
 
