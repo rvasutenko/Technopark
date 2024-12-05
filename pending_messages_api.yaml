@@ -1,0 +1,190 @@
+openapi: 3.0.0
+info:
+  title: Pending messages API
+  description: API для управления отложенными сообщениями
+  version: 1.0.0
+servers:
+  - url: https://steamcommunity.com
+    description: Production server
+
+components:
+  securitySchemes:
+    steamLoginSecure:
+      type: apiKey
+      in: cookie
+      name: steamLoginSecure
+  schemas:
+    PendingMessageResponse:
+      type: object
+      properties:
+        content:
+          type: string
+          description: Текст отложенного сообщения
+        pending_time:
+          type: string
+          description: Время, когда сообщение будет отправлено
+        count:
+          type: string
+          description: Количество отложенных, которое будет возвращено
+
+    CreatePendingMessageRequests:
+      type: object
+      properties:
+        content:
+          type: string
+          description: Текст отложенного сообщения
+        pending_time:
+          type: string
+          description: Время, когда отложенное сообщение будет отправлено
+    
+    CreatePendingMessageResponse:
+      type: object
+      properties:
+        success:
+          type: integer
+        errmsg:
+          type: string
+          description: Сообщение об ошибке, если операция завершилась неудачно
+
+    UpdatePendingMessageRequest:
+      type: object
+      properties:
+        gidmessage:
+          type: string
+          description: ID отложенного сообщения для обновления
+        content:
+          type: string
+          description: Новый текст отложенного сообщения
+        pending_time:
+          type: string
+          description: Новое время для отправки
+    
+    UpdatePendingMessageResponse:
+      type: object
+      properties:
+        success:
+          type: integer
+        errmsg:
+          type: string
+          description: Сообщение об ошибке, если операция завершилась неудачно
+
+    DeletePendingMessageRequest:
+      type: object
+      properties:
+        gidmessage:
+          type: string
+          description: ID отложенного сообщения для удаления
+        start:
+          type: string
+          description: Начальный индекс
+        count:
+          type: string
+          description: Количество отложенных сообщений, возвращаемое после удаления
+
+    DeletePendingMessageResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        start:
+          type: integer
+        pagesize:
+          type: string
+        total_count:
+          type: integer
+        messages_html:
+          type: string
+
+security:
+  - steamLoginSecure: []
+
+paths:
+  /messages/pending:
+    get:
+      summary: Получить список всех отложенных сообщений
+      responses:
+        '200':
+          description: Список отложенных сообщений успешно получен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PendingMessageResponse'
+        '401':
+          description: Неавторизован. Требуется кука steamLoginSecure.
+    post:
+      summary: Создать новое отложенное сообщение
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePendingMessageRequest'
+      responses:
+        '200':
+          description: Отложенное сообщение успешно создано
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreatePendingMessageResponse'
+        '401':
+          description: Неавторизован. Требуется кука steamLoginSecure.
+      security:
+        - steamLoginSecure: []
+
+
+  /messages/pending/update/{id}:
+    post:
+      summary: Обновить отложенное сообщение
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор сообщения
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePendingMessageRequest'
+      responses:
+        '200':
+          description: Отложенное сообщение успешно обновлено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdatePendingMessageResponse'
+        '401':
+          description: Неавторизован. Требуется кука steamLoginSecure.
+      security:
+        - steamLoginSecure: []
+
+
+  /messages/pending/delete/{id}:
+    post:
+      summary: Удалить отложенное сообщение
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор сообщения
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeletePendingMessageRequest'
+      responses:
+        '200':
+          description: Сообщение успешно удалено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeletePendingMessageResponse'
+        '401':
+          description: Неавторизован. Требуется кука steamLoginSecure.
+      security:
+        - steamLoginSecure: []
