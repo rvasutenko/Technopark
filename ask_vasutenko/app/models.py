@@ -4,11 +4,13 @@ from django.utils.safestring import mark_safe
 from django.contrib.auth.models import User
 from django.urls import reverse
 from django.db.models import Count
+from django.core.validators import MaxLengthValidator
 
 
 class QuestionManager(models.Manager):
     def get_new(self):
-        return self.filter(created_at__gte=datetime.today() - timedelta(days=7)).order_by('-created_at').prefetch_related('tags')
+        return self.all().order_by('-created_at')[:100].prefetch_related('tags')
+        # return self.filter(created_at__gte=datetime.today() - timedelta(days=7)).order_by('-created_at').prefetch_related('tags')
 
     def get_top(self):
         return self.order_by('-likes_count')[:20].prefetch_related('tags')
@@ -59,7 +61,7 @@ class Question(models.Model):
         ('ns', 'Not Solved'),
     ]
     title = models.CharField(verbose_name='Заголовок', max_length=100)
-    description = models.TextField('Описание')
+    description = models.TextField('Описание', validators=[MaxLengthValidator(5000)])
     author = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Автор', related_name='questions', db_index=True)
     tags = models.ManyToManyField('Tag', verbose_name='Теги', blank=False, related_name='questions', db_index=True)
     created_at = models.DateTimeField('Создан', auto_now_add=True, db_index=True)
@@ -91,7 +93,7 @@ class Question(models.Model):
 
 class Answer(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='answers', db_index=True)
-    content = models.TextField(verbose_name='Содержание')
+    content = models.TextField(verbose_name='Содержание', validators=[MaxLengthValidator(5000)])
     author = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Автор', related_name='answers', db_index=True)
     created_at = models.DateTimeField('Создан', auto_now_add=True)
     updated_at = models.DateTimeField('Изменён', auto_now=True)

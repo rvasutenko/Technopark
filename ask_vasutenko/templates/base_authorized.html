@@ -1,17 +1,14 @@
-{% extends "base.html" %}
 {% load static %}
 
-{% block account %}
-    <div class="account">
-        <div class="account-image">
-            <img src="{% static 'img/avatar.jpg' %}" class="avatar" alt="avatar">
-        </div>
-        <div class="account-content">
-            <div class="account-name">Dr. Pepper</div>
-            <div class="account-actions">
-                <a href="{% url 'settings' %}">Settings</a>
-                <a href="{% url 'login' %}">Log out</a>
-            </div>
+<div class="account">
+    <div class="account-image">
+        <img src="{% if request.user.profile.avatar %}{{ request.user.profile.avatar.url }}{% else %}{% static 'img/avatar.jpg' %}{% endif %}" class="avatar" alt="avatar">
+    </div>
+    <div class="account-content">
+        <div class="account-name">{{ request.user.username }}</div>
+        <div class="account-actions">
+            <a href="{% url 'settings' %}">Settings</a>
+            <a href="{% url 'logout' %}?continue={{ request.path }}">Log out</a>
         </div>
     </div>
-{% endblock %}
+</div>

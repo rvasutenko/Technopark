@@ -1,4 +1,4 @@
-{% extends "base_authorized.html" %}
+{% extends "base.html" %}
 {% load static %}
 
 {% block title %}
@@ -6,33 +6,42 @@
 {% endblock %}
 
 {% block title-bar %}
-    <h1>Settings: Dr. Pepper</h1>
+    <h1>Settings</h1>
 {% endblock %}
 
 {% block main-content %}
-    <p class="form-error">
-        Incorrect email adress
-    </p>
-    <form action="#" class="settings-form">
+    <form action="#" class="settings-form" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
         <div class="form-line">
-            <p class="form-title">Login</p>
-            <input type="text" class="question-form-input" value="dr_pepper" maxlength="32">
+            <p class="form-title">Username</p>
+            <div class="input-block">
+                <input value="{% if form.username.value %}{{ form.username.value }}{% else %}{{ request.user.username }}{% endif %}" type="text" class="question-form-input" name="username" maxlength="25">
+                {% if form.username.errors %}{{ form.username.errors }}{% endif %}
+            </div>
         </div>
         <div class="form-line">
             <p class="form-title">Email</p>
-            <input type="email" class="question-form-input" value="dr.peppermail.ru" maxlength="32">
+            <div class="input-block">
+                <input value="{% if form.email.value %}{{ form.email.value }}{% else %}{{ request.user.email }}{% endif %}" type="email" class="question-form-input" name="email" maxlength="32">
+                {% if form.email.errors %}{{ form.email.errors }}{% endif %}
+            </div>
         </div>
         <div class="form-line">
-            <p class="form-title">Nickname</p>
-            <input type="text" class="question-form-input" value="Dr. Pepper" maxlength="32">
+            <p class="form-title">Name</p>
+            <div class="input-block">
+                <input value="{% if form.first_name.value %}{{ form.first_name.value }}{% else %}{{ request.user.first_name }}{% endif %}" type="text" class="question-form-input" name="first_name" maxlength="32">
+                {% if form.first_name.errors %}{{ form.first_name.errors }}{% endif %}
+            </div>
         </div>
         <div class="form-line">
             <p class="form-title">Upload avatar</p>
             <div class="avatar-input">
-                <div class="account-image">
-                    <img src="../static/img/avatar.jpg" alt="avatar" class="settings-avatar">
-                </div>
-                <input type="file" id="actual-btn" hidden/>
+                {% if request.user.profile.avatar %}
+                    <div class="account-image">
+                        <img src="{{ request.user.profile.avatar.url }}" alt="avatar" class="settings-avatar">
+                    </div>
+                {% endif %}
+                <input type="file" name="avatar" id="actual-btn" accept="image/png, image/jpeg" hidden/>
                 <div class="choose-file-block">
                     <label for="actual-btn" class="choose-file">Choose File</label>
                     <span id="file-chosen">No file chosen</span>
@@ -46,6 +55,7 @@
                 </script>
             </div>
         </div>
+        {{ form.avatar.errors }}
         <div class="form-line">
             <p class="form-title"></p>
             <button type="submit" class="form-submit">Save</button>

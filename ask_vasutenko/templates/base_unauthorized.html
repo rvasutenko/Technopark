@@ -1,9 +1,6 @@
-{% extends "base.html" %}
 {% load static %}
 
-{% block account %}
-    <div class="account">
-        <a href="{% url 'login' %}" class="log-in-btn">Log In</a>
-        <a href="{% url 'signup' %}" class="register-btn">Register</a>
-    </div>
-{% endblock %}
+<div class="account">
+    <a href="{% url 'login' %}?continue={% url 'index' %}" class="log-in-btn">Log In</a>
+    <a href="{% url 'signup' %}" class="register-btn">Register</a>
+</div>

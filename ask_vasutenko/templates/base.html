@@ -9,6 +9,15 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+<!--    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-beta.1/css/select2.min.css" rel="stylesheet">-->
+<!--    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-beta.1/js/select2.min.js"></script>-->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+
+
+
     <title>{% block title %}{% endblock %}</title>
 </head>
 <body>
@@ -24,7 +33,12 @@
                 <button type="submit" class="search-form-submit">Search</button>
             </form>
         </div>
-        {% block account %}{% endblock %}
+        {% if request.user.is_authenticated %}
+            {% include 'base_authorized.html' %}
+        {% else %}
+            {% include 'base_unauthorized.html' %}
+        {% endif %}
+<!--        {% block account %}{% endblock %}-->
     </header>
 
     <main class="container">

@@ -1,4 +1,4 @@
-{% extends "base_unauthorized.html" %}
+{% extends "base.html" %}
 {% load static %}
 
 {% block title %}
@@ -10,33 +10,51 @@
 {% endblock %}
 
 {% block main-content %}
-    <p class="form-error">
-        Incorrect email adress
-    </p>
-    <form action="#" class="register-form">
+    {% if form.all.errors %}
+        <div class="form-error">
+            {{ form.all.errors }}
+        </div>
+    {% endif %}
+    <form action="#" class="register-form" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
         <div class="form-line">
-            <p class="form-title">Login</p>
-            <input type="text" class="question-form-input" value="dr_pepper" maxlength="32">
+            <p class="form-title">Username</p>
+            <div class="input-block">
+                <input value="{% if form.username.value %}{{ form.username.value }}{% endif %}" type="text" class="question-form-input" name="username" maxlength="25" required>
+                {% if form.username.errors %}{{ form.username.errors }}{% endif %}
+            </div>
         </div>
         <div class="form-line">
             <p class="form-title">Email</p>
-            <input type="email" class="question-form-input" value="dr.pepper" maxlength="32">
+            <div class="input-block">
+                <input value="{% if form.email.value %}{{ form.email.value }}{% endif %}" type="email" class="question-form-input" name="email" maxlength="32" required>
+                {% if form.email.errors %}{{ form.email.errors }}{% endif %}
+            </div>
         </div>
         <div class="form-line">
-            <p class="form-title">Nickname</p>
-            <input type="text" class="question-form-input" value="Dr. Pepper" maxlength="32">
+            <p class="form-title">Name</p>
+            <div class="input-block">
+                <input value="{% if form.first_name.value %}{{ form.first_name.value }}{% endif %}" type="text" class="question-form-input" name="first_name" maxlength="32" required>
+                {% if form.first_name.errors %}{{ form.first_name.errors }}{% endif %}
+            </div>
         </div>
         <div class="form-line">
             <p class="form-title">Password</p>
-            <input type="password" class="question-form-input" value="password" maxlength="16">
+            <div class="input-block">
+                <input type="password" class="question-form-input" name="password" maxlength="32" required>
+                {% if form.password.errors %}{{ form.password.errors }}{% endif %}
+            </div>
         </div>
         <div class="form-line">
             <p class="form-title">Repeat password</p>
-            <input type="password" class="question-form-input" value="password" maxlength="16">
+            <div class="input-block">
+                <input type="password" class="question-form-input" name="password_confirmation" maxlength="32" required>
+                {% if form.password_confirmation.errors %}{{ form.password_confirmation.errors }}{% endif %}
+            </div>
         </div>
         <div class="form-line">
             <p class="form-title">Upload avatar</p>
-            <input type="file" id="actual-btn" hidden/>
+            <input type="file" name="avatar" id="actual-btn" accept="image/png, image/jpeg" hidden/>
             <div class="choose-file-block">
                 <label for="actual-btn" class="choose-file">Choose File</label>
                 <span id="file-chosen">No file chosen</span>

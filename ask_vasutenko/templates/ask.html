@@ -1,4 +1,4 @@
-{% extends "base_authorized.html" %}
+{% extends "base.html" %}
 {% load static %}
 
 {% block title %}
@@ -10,21 +10,28 @@
 {% endblock %}
 
 {% block main-content %}
-    <p class="form-error">
-        Fill in the Title field
-    </p>
-    <form action="#" class="question-form">
+    <form action="#" class="question-form" method="post">
+        {% csrf_token %}
         <div class="form-line">
             <p class="form-title">Title</p>
-            <input type="text" class="question-form-input" maxlength="64" required>
+            <div class="input-block">
+                <input value="{% if form.title.value %}{{ form.title.value }}{% endif %}" type="text" name="title" class="question-form-input" maxlength="100" required>
+                {% if form.title.errors %}{{ form.title.errors }}{% endif %}
+            </div>
         </div>
         <div class="form-line">
             <p class="form-title">Text</p>
-            <textarea cols="30" rows="10" class="question-form-input" maxlength="2048" required>Some text here</textarea>
+            <div class="input-block">
+                <textarea name="description" cols="30" rows="10" class="question-form-input" maxlength="5000" required>{% if form.description.value %}{{ form.description.value }}{% endif %}</textarea>
+                {% if form.description.errors %}{{ form.description.errors }}{% endif %}
+            </div>
         </div>
         <div class="form-line">
             <p class="form-title">Tags</p>
-            <input type="text" class="question-form-input" value="moon, park, puzzle" maxlength="64" required>
+            <div class="input-block">
+                <input value="{% if form.tags.value %}{{ form.tags.value }}{% endif %}" name="tags" type="text" class="question-form-input" maxlength="50" required>
+                {% if form.tags.errors %}{{ form.tags.errors }}{% endif %}
+            </div>
         </div>
         <div class="form-line">
             <p class="form-title"></p>
