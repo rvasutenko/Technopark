@@ -12,25 +12,7 @@
 
     <section class="answers">
         {% for answer in page %}
-            <article class="answer-card" id="answer-{{ answer.id }}">
-                <div class="card-left">
-                    <img src="{% if answer.author.profile.avatar %}{{ answer.author.profile.avatar.url }}{% else %}{% static 'img/avatar.jpg' %}{% endif %}" alt="avatar" class="card-image">
-                    <input type="number" class="card-likes" value="{{ answer.likes_count }}">
-                </div>
-                <div class="card-right">
-                    <div class="card-right-content">
-                        <div class="card-text">
-                            {{ answer.content }}
-                        </div>
-                    </div>
-                    <div class="card-right-bottom">
-                        <p class="checkbox">
-                            <input type="checkbox">
-                            Correct!
-                        </p>
-                    </div>
-                </div>
-            </article>
+            {% include 'answer_card.html' %}
         {% endfor %}
     </section>
 
@@ -42,4 +24,6 @@
         <textarea name="content" cols="30" rows="10" maxlength="5000" required>{% if form.content.value %}{{ form.content.value }}{% endif %}</textarea>
         <button type="submit" class="form-submit">Answer</button>
     </form>
+
+    <script src="{% static 'js/app.js' %}"></script>
 {% endblock %}

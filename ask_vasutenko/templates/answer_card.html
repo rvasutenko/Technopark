@@ -1,0 +1,37 @@
+{% load static %}
+
+<article class="answer-card" id="answer-{{ answer.id }}" data-object-id="{{ answer.id }}" data-question-id="{{ question.id }}">
+    <div class="card-left">
+        <img src="{% if answer.author.profile.avatar %}{{ answer.author.profile.avatar.url }}{% else %}{% static 'img/avatar.jpg' %}{% endif %}" alt="avatar" class="card-image">
+        <div class="vote-btn-group">
+            <button class="dislike-btn {% if not request.user.is_authenticated or answer.user_rate.is_dislike %}disabled{% endif %}">
+                <img src="{% static 'img/arrow.svg' %}" alt="" style="position: relative; right: 1px; rotate: 180deg">
+            </button>
+
+            <span class="like-counter">{{ answer.rating }}</span>
+
+            <button class="like-btn {% if not request.user.is_authenticated %}disabled{% elif not answer.user_rate.is_dislike and answer.user_rate.is_dislike != None %}disabled{% endif %}">
+                <img src="{% static 'img/arrow.svg' %}" alt="" style="position: relative; left: 1px;">
+            </button>
+        </div>
+    </div>
+    <div class="card-right">
+        <div class="card-right-content">
+            <div class="card-text">
+                {{ answer.content }}
+            </div>
+        </div>
+        <div class="card-right-bottom">
+            {% if request.user == question.author %}
+                <p class="checkbox">
+                    <input type="checkbox" class="correct-checkbox" {% if answer.is_correct %}checked{% endif %}>
+                    Correct!
+                </p>
+            {% elif answer.is_correct %}
+                    <div class="correct">
+                        Correct!
+                    </div>
+                {% endif %}
+        </div>
+    </div>
+</article>

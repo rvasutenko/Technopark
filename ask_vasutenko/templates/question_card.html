@@ -1,9 +1,19 @@
 {% load static %}
 
-<article class="card" id="{{ tag.id }}">
+<article class="card" id="{{ tag.id }}" data-object-id="{{ question.id }}">
     <div class="card-left">
-        <img src="{% static 'img/avatar.jpg' %}" alt="avatar" class="card-image">
-        <input type="number" class="card-likes" value="{{ question.likes_count }}">
+        <img src="{% if question.author.profile.avatar %}{{ question.author.profile.avatar.url }}{% else %}{% static 'img/avatar.jpg' %}{% endif %}" alt="avatar" class="card-image">
+        <div class="vote-btn-group">
+            <button class="dislike-btn {% if not request.user.is_authenticated or question.user_rate.is_dislike %}disabled{% endif %}">
+                <img src="{% static 'img/arrow.svg' %}" alt="" style="position: relative; right: 1px; rotate: 180deg">
+            </button>
+
+            <span class="like-counter">{{ question.rating }}</span>
+
+            <button class="like-btn {% if not request.user.is_authenticated %}disabled{% elif not question.user_rate.is_dislike and question.user_rate.is_dislike != None %}disabled{% endif %}">
+                <img src="{% static 'img/arrow.svg' %}" alt="" style="position: relative; left: 1px;">
+            </button>
+        </div>
     </div>
     <div class="card-right">
         <div class="card-right-content">
@@ -17,7 +27,7 @@
             </div>
         </div>
         <div class="card-right-bottom">
-            <a href="{% url 'question' id=question.id %}" class="answers-count">
+            <a href="{% url 'question' id=question.id %}" class="answers-count {% if question.status == 's' %}solved{% endif %}">
                 {{ question.answers_count }} answers
             </a>
             <div class="card-tags">

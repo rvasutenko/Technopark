@@ -4,7 +4,7 @@ from .models import *
 
 @admin.register(Question)
 class QuestionAdmin(admin.ModelAdmin):
-    fields = ('title', 'description', 'author', 'tags', 'status')
+    fields = ('title', 'description', 'author', 'tags', 'status', 'rating')
     list_display = ('title', 'author', 'status')
     filter_horizontal = ('tags',)
     list_filter = ('status',)
@@ -13,7 +13,7 @@ class QuestionAdmin(admin.ModelAdmin):
 
 @admin.register(Answer)
 class AnswerAdmin(admin.ModelAdmin):
-    fields = ('question', 'content', 'author')
+    fields = ('question', 'content', 'author', 'rating')
     list_display = ('question', 'author')
     search_fields = ('author', 'question')
     raw_id_fields = ('question',)
@@ -33,14 +33,14 @@ class TagAdmin(admin.ModelAdmin):
     search_fields = ('name',)
 
 
-@admin.register(QuestionLike)
+@admin.register(QuestionRate)
 class QuestionAdmin(admin.ModelAdmin):
     fields = ('user', 'question')
     list_display = ('user', 'question')
     raw_id_fields = ('question',)
 
 
-@admin.register(AnswerLike)
+@admin.register(AnswerRate)
 class AnswerAdmin(admin.ModelAdmin):
     fields = ('user', 'answer')
     list_display = ('user', 'answer')

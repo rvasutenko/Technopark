@@ -9,21 +9,18 @@ from django.core.validators import MaxLengthValidator
 
 class QuestionManager(models.Manager):
     def get_new(self):
-        return self.all().order_by('-created_at')[:100].prefetch_related('tags')
-        # return self.filter(created_at__gte=datetime.today() - timedelta(days=7)).order_by('-created_at').prefetch_related('tags')
+        return self.order_by('-created_at')[:100].prefetch_related('tags')
 
     def get_top(self):
-        return self.order_by('-likes_count')[:20].prefetch_related('tags')
+        return self.order_by('-rating')[:20].prefetch_related('tags')
 
     def get_by_tag(self, tag_id):
-        return self.filter(tags__id=tag_id).order_by('-likes_count').prefetch_related('tags')
+        return self.filter(tags__id=tag_id).order_by('-rating').prefetch_related('tags')
 
 
 class AnswerManager(models.Manager):
     def get_top(self, question):
-        return self.filter(question=question).annotate(
-            likes_count=Count('likes')
-        ).order_by('-likes_count')
+        return self.filter(question=question).order_by('-is_correct', '-rating')
 
 
 class TagManager(models.Manager):
@@ -67,14 +64,21 @@ class Question(models.Model):
     created_at = models.DateTimeField('Создан', auto_now_add=True, db_index=True)
     updated_at = models.DateTimeField('Изменён', auto_now=True)
     status = models.CharField(verbose_name='Статус', max_length=16, choices=STATUS_CHOICES, default='ns')
-    likes_count = models.PositiveIntegerField(default=0)
+    rating = models.IntegerField(default=0)
     answers_count = models.PositiveIntegerField(default=0)
 
     objects = QuestionManager()
 
-    def update_likes_count(self):
-        self.likes_count = self.likes.count()
-        self.save(update_fields=['likes_count'])
+    def update_status(self):
+        if self.answers.filter(is_correct=True).count() > 0:
+            self.status = 's'
+        else:
+            self.status = 'ns'
+        self.save(update_fields=['status'])
+
+    def update_rating(self):
+        self.rating = self.likes.filter(is_dislike=False).count() - self.likes.filter(is_dislike=True).count()
+        self.save(update_fields=['rating'])
 
     def update_answers_count(self):
         self.answers_count = self.answers.count()
@@ -95,10 +99,16 @@ class Answer(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='answers', db_index=True)
     content = models.TextField(verbose_name='Содержание', validators=[MaxLengthValidator(5000)])
     author = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Автор', related_name='answers', db_index=True)
+    rating = models.IntegerField(default=0)
+    is_correct = models.BooleanField(default=False, verbose_name='Правильный ответ')
     created_at = models.DateTimeField('Создан', auto_now_add=True)
     updated_at = models.DateTimeField('Изменён', auto_now=True)
 
     objects = AnswerManager()
+
+    def update_rating(self):
+        self.rating = self.likes.filter(is_dislike=False).count() - self.likes.filter(is_dislike=True).count()
+        self.save(update_fields=['rating'])
 
     def __str__(self):
         return f'{self.author} to {self.question}'
@@ -108,7 +118,8 @@ class Answer(models.Model):
         verbose_name_plural = 'Ответы'
 
 
-class QuestionLike(models.Model):
+class QuestionRate(models.Model):
+    is_dislike = models.BooleanField(verbose_name='Дизлайк', default=False)
     question = models.ForeignKey('Question', on_delete=models.CASCADE, verbose_name='Вопрос', related_name='likes', db_index=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Пользователь', related_name='question_likes', db_index=True)
     created_at = models.DateTimeField('Поставлен', auto_now_add=True)
@@ -122,7 +133,8 @@ class QuestionLike(models.Model):
         unique_together = ('question', 'user')
 
 
-class AnswerLike(models.Model):
+class AnswerRate(models.Model):
+    is_dislike = models.BooleanField(verbose_name='Дизлайк', default=False)
     answer = models.ForeignKey('Answer', on_delete=models.CASCADE, verbose_name='Ответ', related_name='likes', db_index=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Пользователь', related_name='answer_likes', db_index=True)
     created_at = models.DateTimeField('Поставлен', auto_now_add=True)

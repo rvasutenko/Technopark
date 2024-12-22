@@ -5,6 +5,7 @@ body {
 }
 
 :root {
+    --btn-bg: #DEEEFF;
     --a-default: #1C75CF;
     --a-hover: #235ad1;
     --gray: #D7D9DC;
@@ -78,6 +79,7 @@ header {
     border-bottom: solid var(--gray) 1px;
     top: 0;
 	height: 61px;
+    z-index: 100;
 }
 
 main {
@@ -200,7 +202,7 @@ article {
 .card-left {
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 8px;
     width: 20%;
     min-width: 75px;
 }
@@ -238,6 +240,16 @@ article {
 
 .card .answers-count:hover {
     color: var(--green);
+}
+
+.card .solved {
+    color: var(--white);
+    background-color: var(--green);
+}
+
+.card .solved:hover {
+    color: var(--white);
+    background-color: var(--green);
 }
 
 .card-tags {
@@ -643,4 +655,53 @@ button {
     font-size: 14px;
     list-style-type: none;
     padding: 0;
+}
+
+.vote-btn-group {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.like-btn, .dislike-btn {
+    font-size: 14px;
+    color: var(--a-default);
+    background-color: transparent;
+    border: solid var(--a-default) 1px;
+    border-radius: 6px;
+    cursor: pointer;
+    aspect-ratio: 1 / 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 0;
+}
+
+.like-btn:hover, .dislike-btn:hover {
+    background-color: var(--btn-bg);
+}
+
+.like-counter {
+    font-size: 20px;
+    font-weight: 300;
+    color: var(--a-default);
+}
+
+.disabled, .disabled:hover {
+    cursor: default;
+    border-color: var(--gray);
+    background-color: transparent;
+}
+
+.disabled img {
+    filter: invert(100%) sepia(100%) saturate(10%) hue-rotate(175deg) brightness(100%) contrast(100%);
+}
+
+.correct {
+    font-size: 14px;
+    padding: 2px 8px;
+    color: var(--green);
+    border: solid var(--green) 1px;
+    border-radius: 6px;
 }
