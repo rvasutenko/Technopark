@@ -13,6 +13,7 @@ from django.views.decorators.csrf import csrf_protect
 
 from django.core.files.storage import FileSystemStorage
 from django.views.decorators.http import require_POST
+from django.conf import settings as _settings
 
 
 def bad_request(message):
@@ -84,7 +85,7 @@ def index(request):
     sidebar = gen_sidebar()
     return render(request, 'index.html', context={'page': page, 'questions': questions, 'sidebar': sidebar})
 
-@login_required(redirect_field_name="continue")
+@login_required(redirect_field_name=_settings.REDIRECT_FIELD_NAME)
 def settings(request):
     sidebar = gen_sidebar()
     form = SettingsForm
@@ -135,7 +136,7 @@ def question(request, id):
     return render(request, 'question.html', context={'question': question, 'page': page, 'sidebar': sidebar, 'form': form})
 
 
-@login_required(redirect_field_name="continue")
+@login_required(redirect_field_name=_settings.REDIRECT_FIELD_NAME)
 @require_POST
 @csrf_protect
 def question_like(request, id):
@@ -150,7 +151,7 @@ def question_like(request, id):
     })
 
 
-@login_required(redirect_field_name="continue")
+@login_required(redirect_field_name=_settings.REDIRECT_FIELD_NAME)
 @require_POST
 @csrf_protect
 def answer_like(request, id):
@@ -165,7 +166,7 @@ def answer_like(request, id):
     })
 
 
-@login_required(redirect_field_name="continue")
+@login_required(redirect_field_name=_settings.REDIRECT_FIELD_NAME)
 @require_POST
 @csrf_protect
 def answer_correct(request, id):
@@ -220,7 +221,7 @@ def signup(request):
     return render(request, 'registration.html', context={'sidebar': sidebar, 'form': form})
 
 
-@login_required(redirect_field_name="continue")
+@login_required(redirect_field_name=_settings.REDIRECT_FIELD_NAME)
 def ask(request):
     sidebar = gen_sidebar()
     if request.method == 'POST':

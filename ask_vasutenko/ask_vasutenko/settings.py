@@ -109,10 +109,13 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = "static/"
-STATICFILES_DIRS = [
-    BASE_DIR / "static",
-]
+STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'static/'
+
+# if DEBUG:
+#     STATICFILES_DIRS = [
+#         BASE_DIR / "static",
+#     ]
 
 MEDIA_URL = '/uploads/'
 MEDIA_ROOT = BASE_DIR / 'uploads/'
@@ -121,5 +124,5 @@ MEDIA_ROOT = BASE_DIR / 'uploads/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
+REDIRECT_FIELD_NAME = "continue"
 LOGIN_URL = '/login'
