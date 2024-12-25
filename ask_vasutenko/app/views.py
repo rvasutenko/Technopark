@@ -11,22 +11,9 @@ from django.urls import reverse
 from django.contrib import auth
 from django.views.decorators.csrf import csrf_protect
 
-from django.core.files.storage import FileSystemStorage
 from django.views.decorators.http import require_POST
 from django.conf import settings as _settings
-
-
-def bad_request(message):
-    response = HttpResponse(json.dumps({'message': message}), content_type='application/json')
-    response.status_code = 400
-    return response
-
-def handle_file_saving(request, name):
-    if request.FILES:
-        file = request.FILES[name]
-        fs = FileSystemStorage()
-        filename = fs.save(file.name, file)
-        return filename
+from cent import Client, PublishRequest
 
 
 def paginate(objects_list, request, per_page=10):
@@ -39,13 +26,6 @@ def paginate(objects_list, request, per_page=10):
     except EmptyPage:
         page = paginator.page(paginator.num_pages)
     return page
-
-
-def gen_sidebar():
-    tags = Tag.objects.get_top()
-    best_members = Profile.objects.get_top()
-    sidebar = {'tags': tags, 'bestMembers': best_members}
-    return sidebar
 
 
 def annotate_with_user_rate(request, obj_list):
@@ -78,30 +58,38 @@ def handle_like(request, obj, body):
             obj_like.save()
 
 
+def handle_ws_update(answer):
+    client = Client(_settings.CENTRIFUGO_API_URL, _settings.CENTRIFUGO_API_KEY)
+    request = PublishRequest(channel=str(answer.question.id),
+                             data={
+                                 'answer_id': str(answer.id),
+                                 'content': answer.content,
+                                 'avatar': answer.author.profile.avatar.url,
+                             })
+    client.publish(request)
+
+
 def index(request):
     questions = Question.objects.get_new()
     page = paginate(questions, request)
     annotate_with_user_rate(request, page.object_list)
-    sidebar = gen_sidebar()
-    return render(request, 'index.html', context={'page': page, 'questions': questions, 'sidebar': sidebar})
+    return render(request, 'index.html', context={'page': page, 'questions': questions})
 
 @login_required(redirect_field_name=_settings.REDIRECT_FIELD_NAME)
 def settings(request):
-    sidebar = gen_sidebar()
     form = SettingsForm
     if request.method == 'POST':
         form = SettingsForm(request.POST, request.FILES, user=request.user)
         if form.is_valid():
             form.save()
-    return render(request, 'settings.html', context={'sidebar': sidebar, 'form': form})
+    return render(request, 'settings.html', context={'form': form})
 
 
 def hot(request):
     questions = Question.objects.get_top()
     page = paginate(questions, request)
     annotate_with_user_rate(request, page.object_list)
-    sidebar = gen_sidebar()
-    return render(request, 'hot.html', context={'page': page, 'questions': questions, 'sidebar': sidebar})
+    return render(request, 'hot.html', context={'page': page, 'questions': questions})
 
 
 def tag(request, id):
@@ -112,13 +100,10 @@ def tag(request, id):
     questions = Question.objects.get_by_tag(id)
     page = paginate(questions, request)
     annotate_with_user_rate(request, page.object_list)
-    sidebar = gen_sidebar()
-    return render(request, 'tag.html', context={'tag': tag, 'page': page, 'questions': questions, 'sidebar': sidebar})
+    return render(request, 'tag.html', context={'tag': tag, 'page': page, 'questions': questions})
 
 
 def question(request, id):
-    sidebar = gen_sidebar()
-
     question = get_object_or_404(Question, id=id)
     annotate_with_user_rate(request, [question])
 
@@ -128,12 +113,15 @@ def question(request, id):
 
     form = AnswerForm()
     if request.method == 'POST':
+        if not request.user.is_authenticated:
+            return redirect(reverse('login'))
         form = AnswerForm(request.POST, user=request.user, question=question)
         if form.is_valid():
             answer = form.save()
+            handle_ws_update(answer)
             page_number = answers.count() // 10 + 1
             return redirect(reverse('question', kwargs={'id': form.instance.question_id}) + f'?page={page_number}#answer-{answer.id}')
-    return render(request, 'question.html', context={'question': question, 'page': page, 'sidebar': sidebar, 'form': form})
+    return render(request, 'question.html', context={'question': question, 'page': page, 'form': form})
 
 
 @login_required(redirect_field_name=_settings.REDIRECT_FIELD_NAME)
@@ -187,7 +175,6 @@ def answer_correct(request, id):
 
 
 def login(request):
-    sidebar = gen_sidebar()
     form = LoginForm
     if request.method == 'POST':
         form = LoginForm(request.POST)
@@ -198,7 +185,7 @@ def login(request):
                 continue_url = request.GET.get('continue', '/')
                 return redirect(continue_url)
             form.add_error('password', 'Wrong username or password')
-    return render(request, 'login.html', {'sidebar': sidebar, 'form': form})
+    return render(request, 'login.html', {'form': form})
 
 
 def logout(request):
@@ -208,7 +195,6 @@ def logout(request):
 
 
 def signup(request):
-    sidebar = gen_sidebar()
     form = UserForm
     if request.method == 'POST':
         form = UserForm(request.POST, request.FILES)
@@ -218,12 +204,11 @@ def signup(request):
             if user:
                 auth.login(request, user)
             return redirect(reverse('index'))
-    return render(request, 'registration.html', context={'sidebar': sidebar, 'form': form})
+    return render(request, 'registration.html', context={'form': form})
 
 
 @login_required(redirect_field_name=_settings.REDIRECT_FIELD_NAME)
 def ask(request):
-    sidebar = gen_sidebar()
     if request.method == 'POST':
         form = QuestionForm(request.POST, user=request.user)
         if form.is_valid():
@@ -231,4 +216,4 @@ def ask(request):
             return redirect(reverse('question', kwargs={'id': form.instance.id}))
     else:
         form = QuestionForm()
-    return render(request, 'ask.html', {'sidebar': sidebar, 'form': form})
+    return render(request, 'ask.html', {'form': form})

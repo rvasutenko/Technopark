@@ -10,20 +10,71 @@
 
     <div class="divider"></div>
 
-    <section class="answers">
+    <section class="answers" id="answers-block">
         {% for answer in page %}
             {% include 'answer_card.html' %}
         {% endfor %}
     </section>
 
+    <div id="counter">-</div>
+    <script src="https://unpkg.com/centrifuge@5.0.1/dist/centrifuge.js"></script>
+    <script type="text/javascript">
+        const container = document.getElementById('counter');
+
+        const centrifuge = new Centrifuge("{{ ws_url }}", {
+            token: "{{ token }}"
+        });
+
+        centrifuge.on('connecting', function (ctx) {
+            console.log(`connecting: ${ctx.code}, ${ctx.reason}`);
+        }).on('connected', function (ctx) {
+            console.log(`connected over ${ctx.transport}`);
+        }).on('disconnected', function (ctx) {
+            console.log(`disconnected: ${ctx.code}, ${ctx.reason}`);
+        }).connect();
+
+        const sub = centrifuge.newSubscription("{{ question.id }}");
+
+        sub.on('publication', function (ctx) {
+            const onPageCount = document.querySelectorAll('.answer-card').length;
+            console.log(onPageCount);
+            if (onPageCount < 10) {
+                const answerBlock = document.getElementById('answers-block');
+                const answer = document.querySelector('.answer-card');
+                const clone = answer.cloneNode(true);
+
+                clone.querySelector('.answer-content').innerHTML = ctx.data.content;
+                clone.querySelector('.card-image').src = ctx.data.avatar;
+                clone.querySelector('.like-counter').innerHTML = 0;
+                const correct = clone.querySelector('.correct');
+                if (correct !== null)
+                    correct.remove();
+                clone.querySelector('.dislike-btn').classList.remove('disabled');
+                clone.querySelector('.like-btn').classList.remove('disabled');
+                clone.id = `answer-${ctx.data.answer_id}`;
+                clone.dataset.objectId = ctx.data.answer_id;
+
+                answerBlock.appendChild(clone);
+            }
+        }).on('subscribing', function (ctx) {
+            console.log(`subscribing: ${ctx.code}, ${ctx.reason}`);
+        }).on('subscribed', function (ctx) {
+            console.log('subscribed', ctx);
+        }).on('unsubscribed', function (ctx) {
+            console.log(`unsubscribed: ${ctx.code}, ${ctx.reason}`);
+        }).subscribe();
+    </script>
+
     {% include 'pagination.html' %}
 
-    <div class="divider"></div>
-    <form action="#" class="answer-form" method="post">
-        {% csrf_token %}
-        <textarea name="content" cols="30" rows="10" maxlength="5000" required>{% if form.content.value %}{{ form.content.value }}{% endif %}</textarea>
-        <button type="submit" class="form-submit">Answer</button>
-    </form>
+    {% if request.user.is_authenticated %}
+        <div class="divider"></div>
+        <form action="#" class="answer-form" method="post">
+            {% csrf_token %}
+            <textarea name="content" cols="30" rows="10" maxlength="5000" required>{% if form.content.value %}{{ form.content.value }}{% endif %}</textarea>
+            <button type="submit" class="form-submit">Answer</button>
+        </form>
+    {% endif %}
 
     <script src="{% static 'js/app.js' %}"></script>
 {% endblock %}

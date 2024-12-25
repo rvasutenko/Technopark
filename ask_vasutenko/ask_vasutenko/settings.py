@@ -58,6 +58,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "app.context_processors.global_settings",
             ],
         },
     },
@@ -110,12 +111,12 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / 'static/'
+# STATIC_ROOT = BASE_DIR / 'static/'
 
-# if DEBUG:
-#     STATICFILES_DIRS = [
-#         BASE_DIR / "static",
-#     ]
+if DEBUG:
+    STATICFILES_DIRS = [
+        BASE_DIR / "static",
+    ]
 
 MEDIA_URL = '/uploads/'
 MEDIA_ROOT = BASE_DIR / 'uploads/'
@@ -126,3 +127,15 @@ MEDIA_ROOT = BASE_DIR / 'uploads/'
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 REDIRECT_FIELD_NAME = "continue"
 LOGIN_URL = '/login'
+
+CENTRIFUGO_SECRET_KEY = 'my_secret'
+CENTRIFUGO_WS_URL = 'ws://localhost:8010/connection/websocket'
+CENTRIFUGO_API_KEY = 'my_api_key'
+CENTRIFUGO_API_URL = 'http://localhost:8010/api'
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.filebased.FileBasedCache",
+        "LOCATION": "/var/tmp/django_cache",
+    }
+}
