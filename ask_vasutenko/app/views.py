@@ -228,8 +228,3 @@ def search(request):
             results = ([{'title': question.title, 'url': question.get_absolute_url()} for question in title_results]
                        + [{'title': question.title, 'url': question.get_absolute_url()} for question in content_results])
             return JsonResponse({'results': results})
-        else:
-            results = Question.objects.filter(title__icontains=query)
-            return render(request, 'search_results.html', {'results': results, 'query': query, 'members': get_best_users(), 'tags': get_popular_tags()})
-    else:
-        return render(request, 'search_results.html', {'results': [], 'query': query, 'members': get_best_users(), 'tags': get_popular_tags()})

@@ -21,38 +21,22 @@ def save_user_profile(sender, instance, **kwargs):
 @receiver(post_save, sender=QuestionRate)
 def update_likes_count_on_save(sender, instance, **kwargs):
     instance.question.update_rating()
-    # try:
-    #     Profile.objects.get(user=instance.user).update_q_likes_count()
-    # except Profile.DoesNotExist:
-    #     pass
 
 
 @receiver(post_delete, sender=QuestionRate)
 def update_likes_count_on_delete(sender, instance, **kwargs):
     print('handle')
     instance.question.update_rating()
-    # try:
-    #     Profile.objects.get(user=instance.user).update_q_likes_count()
-    # except Profile.DoesNotExist:
-    #     pass
 
 
 @receiver(post_save, sender=AnswerRate)
 def update_likes_count_on_save(sender, instance, **kwargs):
     instance.answer.update_rating()
-    # try:
-    #     Profile.objects.get(user=instance.user).update_a_likes_count()
-    # except Profile.DoesNotExist:
-    #     pass
 
 
 @receiver(post_delete, sender=AnswerRate)
 def update_likes_count_on_delete(sender, instance, **kwargs):
     instance.answer.update_rating()
-    # try:
-    #     Profile.objects.get(user=instance.user).update_a_likes_count()
-    # except Profile.DoesNotExist:
-    #     pass
 
 
 

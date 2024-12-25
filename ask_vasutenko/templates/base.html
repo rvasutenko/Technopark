@@ -20,9 +20,10 @@
             </a>
         </div>
         <div class="search-form">
-            <form action="#" class="search-form">
-                <input type="search" class="search-form-input" placeholder="Search..." maxlength="64">
-                <button type="submit" class="search-form-submit">Search</button>
+            <form class="search-form d-flex" role="search" action="{% url 'ask' %}" method="get">
+                {% csrf_token %}
+                <input type="search" class="search-form-input form-control me-2" placeholder="Search..." maxlength="64" aria-label="Search">
+                <button type="submit" class="search-form-submit btn btn-outline-success">Search</button>
             </form>
         </div>
         {% if request.user.is_authenticated %}
@@ -30,7 +31,6 @@
         {% else %}
             {% include 'base_unauthorized.html' %}
         {% endif %}
-<!--        {% block account %}{% endblock %}-->
     </header>
 
     <main class="container">

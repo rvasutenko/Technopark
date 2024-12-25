@@ -103,3 +103,43 @@ function likeBtnOnClick(cards, urlPrefix) {
         }
     }
 }
+
+
+
+
+const searchInput = document.querySelector('input[type="search"]');
+const suggestionsBox = document.createElement('div');
+suggestionsBox.style.display = 'none';
+suggestionsBox.classList.add('suggestions-box');
+document.body.appendChild(suggestionsBox);
+let debounceTimeout;
+searchInput.addEventListener('input', () => {
+    clearTimeout(debounceTimeout);
+    debounceTimeout = setTimeout(() => {
+        const query = searchInput.value.trim();
+        if (query) {
+            suggestionsBox.style.display = 'block';
+            fetch(`/search/?q=${encodeURIComponent(query)}`, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.results.length > 0) {
+                    suggestionsBox.innerHTML = data.results
+                        .map(result => `<a href="${result.url}">${result.title}</a>`)
+                        .join('');
+                } else {
+                    suggestionsBox.innerHTML = '<p style="padding: 5px; color: #888;">Ничего не найдено</p>';
+                }
+                const rect = searchInput.getBoundingClientRect();
+                suggestionsBox.style.left = `${rect.left}px`;
+                suggestionsBox.style.width = `${rect.width}px`;
+            });
+        } else {
+            suggestionsBox.style.display = 'none';
+            suggestionsBox.innerHTML = '';
+        }
+    }, 300);
+});
