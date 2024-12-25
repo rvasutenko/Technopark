@@ -1,6 +1,6 @@
 {% load static %}
 
-<article class="card" id="{{ tag.id }}" data-object-id="{{ question.id }}">
+<article class="card" id="{{ question.id }}" data-object-id="{{ question.id }}">
     <div class="card-left">
         <img src="{% if question.author.profile.avatar %}{{ question.author.profile.avatar.url }}{% else %}{% static 'img/avatar.jpg' %}{% endif %}" alt="avatar" class="card-image">
         <div class="vote-btn-group">

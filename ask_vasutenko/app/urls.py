@@ -16,6 +16,7 @@ urlpatterns = [
     path("logout/", views.logout, name="logout"),
     path("signup/", views.signup, name="signup"),
     path("ask/", views.ask, name="ask"),
+    path('search/', views.search, name='search'),
 ]
 
 # if settings.DEBUG:

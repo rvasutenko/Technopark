@@ -217,3 +217,19 @@ def ask(request):
     else:
         form = QuestionForm()
     return render(request, 'ask.html', {'form': form})
+
+
+def search(request):
+    query = request.GET.get('q', '').strip()
+    if query:
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            title_results = Question.objects.filter(title__icontains=query)[:100]
+            content_results = Question.objects.filter(description__icontains=query)[:100]
+            results = ([{'title': question.title, 'url': question.get_absolute_url()} for question in title_results]
+                       + [{'title': question.title, 'url': question.get_absolute_url()} for question in content_results])
+            return JsonResponse({'results': results})
+        else:
+            results = Question.objects.filter(title__icontains=query)
+            return render(request, 'search_results.html', {'results': results, 'query': query, 'members': get_best_users(), 'tags': get_popular_tags()})
+    else:
+        return render(request, 'search_results.html', {'results': [], 'query': query, 'members': get_best_users(), 'tags': get_popular_tags()})
