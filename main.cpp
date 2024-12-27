@@ -1,125 +1,65 @@
-#include "main.h"
+#include "listgraph.h"
+#include "kruskalmst.h"
+#include <iostream>
+#include <vector>
+#include <cmath>
+#include <random>
 
-void BFS(const IGraph& graph, int vertex, vector<bool>& visited, const function<void(int)>& func) {
-    queue<int> qu;
-    qu.push(vertex);
-    visited[vertex] = true;
+using namespace std;
 
-    while (!qu.empty()) {
-        int currentVertex = qu.front();
-        qu.pop();
+vector<pair<double, double>> GeneratePoints(int n) {
+    random_device rd;
+    mt19937 gen(rd());
+    normal_distribution<> dist(1);
 
-        func(currentVertex);
+    vector<pair<double, double>> points(n);
+    for (int i = 0; i < n; ++i)
+        points[i] = {dist(gen), dist(gen)};
+    return points;
+}
 
-        for (int nextVertex: graph.GetNextVertices(currentVertex)) {
-            if (!visited[nextVertex]) {
-                visited[nextVertex] = true;
-                qu.push(nextVertex);
-            }
+double Distance(const pair<double, double>& a, const pair<double, double>& b) {
+    return sqrt((a.first - b.first) * (a.first - b.first) + (a.second - b.second) * (a.second - b.second));
+}
+
+ListGraph CreateGraph(const vector<pair<double, double>>& points) {
+    int n = points.size();
+    ListGraph graph(n);
+    for (int i = 0; i < n; ++i) {
+        for (int j = i + 1; j < n; ++j) {
+            double dist = Distance(points[i], points[j]);
+            graph.AddEdge(i, j, dist);
         }
     }
-}
-
-void mainBFS(const IGraph& graph, const function<void(int)>& func) {
-    vector<bool> visited(graph.VerticesCount(), false);
-
-    for (int i = 0; i < graph.VerticesCount(); ++i)
-        if (!visited[i])
-            BFS(graph, i, visited, func);
-}
-
-void DFS(const IGraph& graph, int vertex, vector<bool>& visited, const function<void(int)>& func) {
-    visited[vertex] = true;
-    func(vertex);
-
-    for (int nextVertex: graph.GetNextVertices(vertex))
-        if (!visited[nextVertex])
-            DFS(graph, nextVertex, visited, func);
-}
-
-void mainDFS(const IGraph& graph, const function<void(int)>& func) {
-    vector<bool> visited(graph.VerticesCount(), false);
-
-    for (int i = 0; i < graph.VerticesCount(); ++i)
-        if (!visited[i])
-            DFS(graph, i, visited, func);
-}
-
-void topologicalSortInternal(const IGraph& graph, int vertex, vector<bool>& visited, deque<int>& sorted) {
-    visited[vertex] = true;
-
-    for (int nextVertex: graph.GetNextVertices(vertex))
-        if (!visited[nextVertex])
-            topologicalSortInternal(graph, nextVertex, visited, sorted);
-
-    sorted.push_front(vertex);
-}
-
-deque<int> topologicalSort(const IGraph& graph) {
-    deque<int> sorted;
-    vector<bool> visited(graph.VerticesCount(), false);
-
-    for (int i = 0; i < graph.VerticesCount(); ++i)
-        if (!visited[i])
-            topologicalSortInternal(graph, i, visited, sorted);
-
-    return sorted;
+    return graph;
 }
 
 int main() {
-    ListGraph listGraph(7);
-    listGraph.AddEdge(0, 1);
-    listGraph.AddEdge(0, 5);
-    listGraph.AddEdge(1, 2);
-    listGraph.AddEdge(1, 3);
-    listGraph.AddEdge(1, 5);
-    listGraph.AddEdge(1, 6);
-    listGraph.AddEdge(3, 2);
-    listGraph.AddEdge(3, 4);
-    listGraph.AddEdge(3, 6);
-    listGraph.AddEdge(5, 4);
-    listGraph.AddEdge(5, 6);
-    listGraph.AddEdge(6, 4);
+    for (int n = 2; n <= 10; ++n) {
+        vector<double> approximations;
 
-    mainBFS(listGraph, [](int vertex){ cout << vertex << " "; });
-    cout << endl;
-    mainDFS(listGraph, [](int vertex){ cout << vertex << " "; });
-    cout << endl;
-    for (int vertex: topologicalSort(listGraph))
-        cout << vertex << " ";
+        for (int trial = 0; trial < 100; ++trial) {
+            vector<pair<double, double>> points = GeneratePoints(n);
+            ListGraph graph = CreateGraph(points);
 
-    cout << endl;
-    cout << endl;
+            vector<tuple<int, int, double>> edges = graph.GetEdges();
+            double mstWeight = KruskalMST::FindMSTWeight(edges, graph.VerticesCount());
 
-    MatrixGraph matrixGraph(listGraph);
-    mainBFS(matrixGraph, [](int vertex){ cout << vertex << " "; });
-    cout << endl;
-    mainDFS(matrixGraph, [](int vertex){ cout << vertex << " "; });
-    cout << endl;
-    for (int vertex: topologicalSort(matrixGraph))
-        cout << vertex << " ";
+            double tspEstimate = 2 * mstWeight;
+            approximations.push_back(tspEstimate);
+        }
 
-    cout << endl;
-    cout << endl;
+        double mean = 0, sqSum = 0;
+        for (double value : approximations) {
+            mean += value;
+            sqSum += value * value;
+        }
+        mean /= approximations.size();
+        double variance = sqSum / approximations.size() - mean * mean;
+        double stddev = sqrt(variance);
 
-    ArcGraph arcGraph(matrixGraph);
-    mainBFS(arcGraph, [](int vertex){ cout << vertex << " "; });
-    cout << endl;
-    mainDFS(arcGraph, [](int vertex){ cout << vertex << " "; });
-    cout << endl;
-    for (int vertex: topologicalSort(arcGraph))
-        cout << vertex << " ";
-
-    cout << endl;
-    cout << endl;
-
-    SetGraph setGraph(arcGraph);
-    mainBFS(setGraph, [](int vertex){ cout << vertex << " "; });
-    cout << endl;
-    mainDFS(setGraph, [](int vertex){ cout << vertex << " "; });
-    cout << endl;
-    for (int vertex: topologicalSort(setGraph))
-        cout << vertex << " ";
+        cout << "N = " << n << ", Mean: " << mean << ", Stddev: " << stddev << endl;
+    }
 
     return 0;
 }
